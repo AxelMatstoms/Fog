@@ -5,7 +5,7 @@
 
 namespace Game {
 
-static Renderer::ParticleSystem system;
+Renderer::ParticleSystem system;
 
 Physics::ShapeID square;
 
@@ -51,9 +51,6 @@ void entity_registration() {
     REGISTER_ENTITY(MyEnt);
 }
 
-Renderer::Camera to;
-Renderer::Camera from;
-Mixer::Channel *channel;
 void setup() {
     using namespace Input;
     add(K(a), Name::LEFT);
@@ -61,101 +58,32 @@ void setup() {
     add(K(w), Name::UP);
     add(K(s), Name::DOWN);
 
-    add(A(LEFTX, Player::P1), Name::LEFT_RIGHT);
-    add(A(LEFTY, Player::P1), Name::UP_DOWN);
-    add(B(A, Player::P1), Name::SEL);
+    Renderer::fetch_camera(0)->zoom = 2;
 
-    add(A(LEFTX, Player::P2), Name::LEFT_RIGHT);
-    add(A(LEFTY, Player::P2), Name::UP_DOWN);
-    add(B(A, Player::P2), Name::SEL);
-
-    Vec2 points[] = {
-        V2(0.0, 1.0),
-        V2(1.0, 1.0),
-        V2(1.0, 0.0),
-        V2(0.0, 0.0),
-    };
-    Physics::add_shape(LEN(points), points);
-
-    Renderer::fetch_camera(0)->zoom = 0.1;
-
-    to = Renderer::camera_fit(LEN(points), points, 0.0);
-    from = *Renderer::fetch_camera();
-
-    channel = Mixer::fetch_channel(2);
-    channel->lowpass.weight_delta = 1.2;
-    channel->highpass.weight_delta = 1.2;
-
-    Mixer::play_sound(2, ASSET_WHITE, 1.0,
-            Mixer::AUDIO_DEFAULT_GAIN,
-            Mixer::AUDIO_DEFAULT_VARIANCE,
-            Mixer::AUDIO_DEFAULT_VARIANCE,
-            true);
+    system = Renderer::create_particle_system(5, 1000, V2(0, 0));
+    system.one_color = false;
+    system.one_size = true;
+    system.alive_time = {0.2, 0.4};
+    system.velocity_dir = {0, 2*PI};
+    system.spawn_size = {0.01, 0.03};
+    system.die_red = {0.96, 0.96};
+    system.die_green = {0.894, 0.894};
+    system.die_blue = {0.529, 0.529};
+    system.velocity = {0.1, 0.5};
 }
 
 // Main logic
 void update(f32 delta) {
+    system.update(delta);
+
     using namespace Input;
-    static bool show_camera_controls = false;
-    static Vec2 shake = V2(0, 0);
-    static bool dual_cameras = false;
-    static u32 current_cam = 0;
-    if (Util::begin_tweak_section("Camera controls", &show_camera_controls)) {
-        Util::tweak("current_cam", &current_cam);
-        current_cam = CLAMP(0, OPENGL_NUM_CAMERAS - 1, current_cam);
-        Util::tweak("zoom", &Renderer::fetch_camera(current_cam)->zoom);
-        Util::tweak("position", &Renderer::fetch_camera(current_cam)->position);
-        Util::tweak("aspect", &Renderer::fetch_camera(current_cam)->aspect_ratio);
-        Util::tweak("x", &shake.x, 0.1);
-        Util::tweak("y", &shake.y, 0.1);
-        Util::tweak("split screen", &dual_cameras);
-        Util::tweak("num:", &Renderer::_fog_num_active_cameras);
-    }
-    Util::end_tweak_section(&show_camera_controls);
-    static bool show_audio_tweaks = false;
-    if (Util::begin_tweak_section("Audio tweaks", &show_audio_tweaks)) {
-        Util::tweak("delay length", &channel->delay.len_seconds);
-        Util::tweak("delay feedback", &channel->delay.feedback, 0.5);
-        Util::tweak("lowpass weight", &channel->lowpass.weight);
-        Util::tweak("lowpass weight target", &channel->lowpass.weight_target);
-        Util::tweak("highpass weight", &channel->highpass.weight);
-        Util::tweak("highpass weight target", &channel->highpass.weight_target);
-    }
-    Util::end_tweak_section(&show_audio_tweaks);
-    static bool show_various_tweaks = false;
-    // static Span span = { 0.3, 0.35};
-    if (Util::begin_tweak_section("Other tweaks", &show_various_tweaks)) {
-        Util::tweak("max_entity", &Logic::_fog_es.max_entity);
-        Util::tweak("num_entities", &Logic::_fog_es.num_entities);
-        Util::tweak("num_removed", &Logic::_fog_es.num_removed);
-        Util::tweak("next_free", &Logic::_fog_es.next_free);
-    }
-    Util::end_tweak_section(&show_various_tweaks);
-
-    Renderer::debug_camera(0);
-
-    if (pressed(Name::UP)) {
-        channel->set_highpass(0.05, 2);
-    }
-
-    if (pressed(Name::RIGHT)) {
-        channel->set_highpass(0.25, 2);
-    }
-
-    if (pressed(Name::DOWN)) {
-        channel->set_highpass(1, 2);
-    }
-
-    if (pressed(Name::LEFT)) {
-    }
+    if (down(Name::LEFT))
+        system.spawn();
 }
 
 // Main draw
 void draw() {
-    const char *some_string = "Wellcome to the other side!";
-    Renderer::draw_text(some_string, 0, -0.2, 1.0, ASSET_MONACO_FONT, 0);
-    Renderer::draw_text(some_string, 0, 0, 1.0, ASSET_MONACO_FONT, -0.5);
-    Renderer::draw_text(some_string, 0, 0.2, 1.0, ASSET_MONACO_FONT, -1.0);
+    system.draw();
 }
 
 }  // namespace Game
