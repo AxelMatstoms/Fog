@@ -10,8 +10,10 @@ namespace Renderer {
 // TODO(ed): Direction and speen instead of random vec.
 struct Particle {
     f32 progress;
+    f32 alive;
 
     f32 inv_alive_time;
+    bool keep_alive;
     f32 rotation;
     f32 angular_velocity;
     // TODO(ed): Angular damping?
@@ -60,6 +62,7 @@ struct ParticleSystem {
     Particle *particles = nullptr;
 
     bool relative;
+    bool keep_alive;
     bool one_color;
     bool one_alpha;
     bool one_size;

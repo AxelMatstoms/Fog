@@ -60,7 +60,8 @@ void setup() {
 
     Renderer::fetch_camera(0)->zoom = 2;
 
-    system = Renderer::create_particle_system(5, 1000, V2(0, 0));
+    system = Renderer::create_particle_system(5, 200, V2(0, 0));
+    system.keep_alive = true;
     system.one_color = false;
     system.one_size = true;
     system.alive_time = {0.2, 0.4};

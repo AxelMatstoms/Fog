@@ -1,12 +1,13 @@
 namespace Renderer {
 
 bool Particle::dead() {
-    return progress > 1.0;
+    return (!keep_alive) && alive > 1.0;
 }
 
 void Particle::update(f32 delta) {
     if (dead()) return;
-    progress += inv_alive_time * delta;
+    alive += inv_alive_time * delta;
+    progress = MOD(alive, 1.0);
     velocity += acceleration * delta;
     position += velocity * delta;
     velocity *= pow(damping, delta);
@@ -48,8 +49,9 @@ Particle ParticleSystem::generate() {
         second_color.w = die_alpha.random();
     }
     return {
-        0,
+        0, 0,
             1.0f / alive_time.random(),
+            keep_alive,
 
             rotation.random(),
             angular_velocity.random(),
@@ -127,7 +129,7 @@ ParticleSystem create_particle_system(u32 layer, u32 num_particles, Vec2 positio
     Util::MemoryArena *arena = Util::request_arena();
     Particle *particles = arena->push<Particle>(num_particles);
     for (u32 i = 0; i < num_particles; i++) {
-        particles[i].progress = 2.0;
+        particles[i].alive = 2.0;
     }
     ParticleSystem particle_system = {arena, 0, 1};
     particle_system.head = 1;
