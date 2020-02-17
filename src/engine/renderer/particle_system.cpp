@@ -7,12 +7,16 @@ bool Particle::dead() {
 void Particle::update(f32 delta) {
     if (dead()) return;
     alive += inv_alive_time * delta;
-    progress = MOD(alive, 1.0);
     velocity += acceleration * delta;
     position += velocity * delta;
     velocity *= pow(damping, delta);
-
     rotation += angular_velocity * delta;
+
+    if (MOD(alive, 2.0) > 1.0) {  // 1+2n < alive < 2+2n
+        progress = 1 - MOD(alive, 1.0);
+    } else {
+        progress = MOD(alive, 1.0);
+    }
 }
 
 void Particle::render(u32 layer, Vec2 origin, s32 slot, Vec2 uv_min, Vec2 uv_dim) {
@@ -28,7 +32,7 @@ void Particle::render(u32 layer, Vec2 origin, s32 slot, Vec2 uv_min, Vec2 uv_dim
         LERP(spawn_color, progress, die_color));
 }
 
-
+//TODO(gu) replace oldest particle when particle system is full ?
 Particle ParticleSystem::generate() {
     ASSERT(particles, "Trying to use uninitalized/destroyed particle system");
 
@@ -138,6 +142,7 @@ ParticleSystem create_particle_system(u32 layer, u32 num_particles, Vec2 positio
     particle_system.layer = layer;
 
     particle_system.relative = false;
+    particle_system.keep_alive = false;
     particle_system.one_color = true;
     particle_system.one_alpha = false;
     particle_system.one_size = false;

@@ -63,7 +63,7 @@ void setup() {
     system = Renderer::create_particle_system(5, 200, V2(0, 0));
     system.keep_alive = true;
     system.one_color = false;
-    system.one_size = true;
+    system.one_size = false;
     system.alive_time = {0.2, 0.4};
     system.velocity_dir = {0, 2*PI};
     system.spawn_size = {0.01, 0.03};
