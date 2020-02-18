@@ -272,6 +272,22 @@ real length(Vec4 a) { return sqrt(length_squared(a)); }
 
 Vec4 normalize(Vec4 a) { return a / length(a); }
 
+typedef Vec4 (*ProgressFuncVec4) (f32);
+ProgressFuncVec4 get_std_progress_vec4_func(Vec4 start_value, Vec4 end_value, f32 start_slope, f32 end_slope) {
+    // assume "linear" change between start and end, so:
+    //     y=0 => start_value
+    //     y=1 => end_value
+    // which means p and q from above but with set start_value=0 and end_value=1
+    const f32 p = -(2 + start_slope + end_slope);
+    const f32 q = -(3 + 2*start_slope + end_slope);
+    auto func = [p, q, start_slope](Vec4 start, Vec4 end, f32 progress) {
+        return LERP(start, (p*pow(progress, 3) + q*pow(progress, 2) + start_slope*progress), end);
+        //TODO(gu) return LERP(start, end, p*pow(progress, 3) + q*pow(progress, 2) + start_slope*progress);
+    };
+    return Function<Vec4(Vec4, Vec4, f32)>(func);
+}
+
+
 Vec3 V3(Vec2 v) { return {v.x, v.y, 0.0f}; }
 
 Vec4 V4(Vec2 v, real x4 = 1.0f) { return {v.x, v.y, 0.0f, x4}; }

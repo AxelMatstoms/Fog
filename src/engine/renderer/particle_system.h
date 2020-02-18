@@ -9,7 +9,6 @@ namespace Renderer {
 // TODO(ed): Texture coordinates
 // TODO(ed): Direction and speen instead of random vec.
 struct Particle {
-    f32 progress;
     f32 alive;
 
     f32 inv_alive_time;
@@ -23,13 +22,10 @@ struct Particle {
     Vec2 acceleration;
     f32 damping;
 
-    f32 spawn_size;
-    f32 die_size;
-
+    ProgressFuncF32 size;
     Vec2 dim;
 
-    Vec4 spawn_color;
-    Vec4 die_color;
+    ProgressFuncVec4 color;
 
     s16 sprite;
 
@@ -53,7 +49,6 @@ struct ParticleSystem {
     u32 num_sub_sprites;
     u32 layer;
     SubSprite sub_sprites[MAX_NUM_SUB_SPRITES];
-
 
     // Utility
     u32 head;
@@ -83,7 +78,9 @@ struct ParticleSystem {
     Span acceleration;
 
     Span spawn_size;
+    Span spawn_size_deriv;
     Span die_size;
+    Span die_size_deriv;
 
     Span width;
     Span height;
@@ -92,11 +89,13 @@ struct ParticleSystem {
     Span spawn_green;
     Span spawn_blue;
     Span spawn_alpha;
+    Span spawn_color_deriv;
 
     Span die_red;
     Span die_green;
     Span die_blue;
     Span die_alpha;
+    Span die_color_deriv;
 
     // Spawns new particle, used internally.
     Particle generate();

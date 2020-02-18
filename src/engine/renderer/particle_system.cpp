@@ -11,12 +11,6 @@ void Particle::update(f32 delta) {
     position += velocity * delta;
     velocity *= pow(damping, delta);
     rotation += angular_velocity * delta;
-
-    if (MOD(alive, 2.0) > 1.0) {  // 1+2n < alive < 2+2n
-        progress = 1 - MOD(alive, 1.0);
-    } else {
-        progress = MOD(alive, 1.0);
-    }
 }
 
 void Particle::render(u32 layer, Vec2 origin, s32 slot, Vec2 uv_min, Vec2 uv_dim) {
@@ -25,11 +19,11 @@ void Particle::render(u32 layer, Vec2 origin, s32 slot, Vec2 uv_min, Vec2 uv_dim
         layer,
         slot,
         position + origin,
-        dim * LERP(spawn_size, progress, die_size),
+        dim * size(progress);
         rotation,
         uv_min,
         uv_dim,
-        LERP(spawn_color, progress, die_color));
+        color(progress);
 }
 
 //TODO(gu) replace oldest particle when particle system is full ?
@@ -37,23 +31,30 @@ Particle ParticleSystem::generate() {
     ASSERT(particles, "Trying to use uninitalized/destroyed particle system");
 
     f32 first_size = spawn_size.random();
+    f32 first_size_deriv = spawn_size_deriv.random();
     f32 second_size = one_size ? first_size : die_size.random();
+    f32 second_size_deriv = spawn_size_deriv.random();
 
     Vec4 first_color = V4(spawn_red.random(), spawn_green.random(),
             spawn_blue.random(), spawn_alpha.random());
+    f32 first_color_deriv = spawn_color_deriv.random();
+
     Vec4 second_color;
+    f32 second_color_deriv;
     if (one_color) {
         second_color = first_color;
+        second_color_deriv = first_color_deriv;
     } else {
         second_color = V4(die_red.random(), die_green.random(),
                 die_blue.random(), first_color.w);
+        second_color_deriv = die_color_deriv.random();
     }
 
     if (!one_alpha) {
         second_color.w = die_alpha.random();
     }
     return {
-        0, 0,
+        0,
             1.0f / alive_time.random(),
             keep_alive,
 
@@ -65,13 +66,11 @@ Particle ParticleSystem::generate() {
             rotate(V2(1, 0), acceleration_dir.random()) * acceleration.random(),
             damping.random(),
 
-            first_size,
-            second_size,
+            get_std_progress_f32_func(first_size, second_sizefirst_size_deriv, second_size_deriv),
 
             V2(width.random(), height.random()),
 
-            first_color,
-            second_color,
+            get_std_progress_vec4_func(first_color, second_color, first_color_deriv, second_color_deriv,
             (s16) (num_sub_sprites ?  random_int() % num_sub_sprites : -1),
     };
 }
