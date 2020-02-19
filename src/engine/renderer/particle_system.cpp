@@ -7,6 +7,7 @@ bool Particle::dead() {
 void Particle::update(f32 delta) {
     if (dead()) return;
     alive += inv_alive_time * delta;
+    progress = MOD(alive, 1.0);  //TODO(gu)
     velocity += acceleration * delta;
     position += velocity * delta;
     velocity *= pow(damping, delta);
@@ -19,7 +20,7 @@ void Particle::render(u32 layer, Vec2 origin, s32 slot, Vec2 uv_min, Vec2 uv_dim
         layer,
         slot,
         position + origin,
-        dim * size(progress);
+        dim * size(progress),
         rotation,
         uv_min,
         uv_dim,
@@ -54,7 +55,7 @@ Particle ParticleSystem::generate() {
         second_color.w = die_alpha.random();
     }
     return {
-        0,
+        0, 0,
             1.0f / alive_time.random(),
             keep_alive,
 
@@ -66,7 +67,7 @@ Particle ParticleSystem::generate() {
             rotate(V2(1, 0), acceleration_dir.random()) * acceleration.random(),
             damping.random(),
 
-            get_std_progress_f32_func(first_size, second_sizefirst_size_deriv, second_size_deriv),
+            get_std_progress_f32_func(first_size, second_size, first_size_deriv, second_size_deriv),
 
             V2(width.random(), height.random()),
 

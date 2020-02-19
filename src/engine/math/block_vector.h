@@ -280,9 +280,8 @@ ProgressFuncVec4 get_std_progress_vec4_func(Vec4 start_value, Vec4 end_value, f3
     // which means p and q from above but with set start_value=0 and end_value=1
     const f32 p = -(2 + start_slope + end_slope);
     const f32 q = -(3 + 2*start_slope + end_slope);
-    auto func = [p, q, start_slope](Vec4 start, Vec4 end, f32 progress) {
-        return LERP(start, (p*pow(progress, 3) + q*pow(progress, 2) + start_slope*progress), end);
-        //TODO(gu) return LERP(start, end, p*pow(progress, 3) + q*pow(progress, 2) + start_slope*progress);
+    auto func = [p, q, start_value, start_slope](f32 progress) {
+        return LERP(start_value, (p*pow(progress, 3) + q*pow(progress, 2) + start_slope*progress), end_value);
     };
     return Function<Vec4(Vec4, Vec4, f32)>(func);
 }

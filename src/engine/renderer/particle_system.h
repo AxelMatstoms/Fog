@@ -10,6 +10,7 @@ namespace Renderer {
 // TODO(ed): Direction and speen instead of random vec.
 struct Particle {
     f32 alive;
+    f32 progress;
 
     f32 inv_alive_time;
     bool keep_alive;
