@@ -23,7 +23,7 @@ void Particle::render(u32 layer, Vec2 origin, s32 slot, Vec2 uv_min, Vec2 uv_dim
         rotation,
         uv_min,
         uv_dim,
-        color(progress);
+        color(progress));
 }
 
 //TODO(gu) replace oldest particle when particle system is full ?
@@ -70,7 +70,7 @@ Particle ParticleSystem::generate() {
 
             V2(width.random(), height.random()),
 
-            get_std_progress_vec4_func(first_color, second_color, first_color_deriv, second_color_deriv,
+            get_std_progress_vec4_func(first_color, second_color, first_color_deriv, second_color_deriv),
             (s16) (num_sub_sprites ?  random_int() % num_sub_sprites : -1),
     };
 }
