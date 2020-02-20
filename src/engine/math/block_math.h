@@ -122,7 +122,8 @@ float winding_direction(Vec2 p1, Vec2 p2, Vec2 p3) {
            (p2.x - p1.x) * (p3.y - p2.y);
 }
 
-typedef f32 (*ProgressFuncF32) (f32);
+//typedef f32 (*ProgressFuncF32) (f32);
+typedef Function<f32(f32)> ProgressFuncF32;
 ProgressFuncF32 get_std_progress_f32_func(f32 start_value, f32 end_value, f32 start_slope, f32 end_slope) {
     const f32 p = 2*start_value - 2*end_value + start_slope + end_slope;
     const f32 q = -(3*start_value - 3*end_value + 2*start_slope + end_slope);
