@@ -56,7 +56,7 @@ struct Vec2i {
 
     void operator/=(s32 scaler) { *this = (*this) / scaler; }
 
-    bool operator==(Vec2i other) {
+    bool operator==(Vec2i other) const {
         return x == other.x && y == other.y;
     }
 };
@@ -102,7 +102,7 @@ struct Vec2 {
 
     void operator/=(real scaler) { *this = (*this) / scaler; }
 
-    bool operator==(Vec2 other) {
+    bool operator==(Vec2 other) const {
         return (x - other.x) * (x - other.x) < FLOAT_EQ_MARGIN &&
                (y - other.y) * (y - other.y) < FLOAT_EQ_MARGIN;
     }
@@ -149,19 +149,19 @@ struct Vec3 {
         real _[3];
     };
 
-    Vec3 operator-() { return {-x, -y, -z}; }
+    Vec3 operator-() const { return {-x, -y, -z}; }
 
-    Vec3 operator+(Vec3 other) {
+    Vec3 operator+(Vec3 other) const {
         return {x + other.x, y + other.y, z + other.z};
     }
 
-    Vec3 operator-(Vec3 other) {
+    Vec3 operator-(Vec3 other) const {
         return {x - other.x, y - other.y, z - other.z};
     }
 
-    Vec3 operator*(real scaler) { return {x * scaler, y * scaler, z * scaler}; }
+    Vec3 operator*(real scaler) const { return {x * scaler, y * scaler, z * scaler}; }
 
-    Vec3 operator/(real scaler) {
+    Vec3 operator/(real scaler) const {
         real divisor = 1.0f / scaler;
         Vec3 result = {x * divisor, y * divisor, z * divisor};
         return result;
@@ -183,7 +183,7 @@ struct Vec3 {
 
     void operator/=(real scaler) { *this = (*this) / scaler; }
 
-    bool operator==(Vec3 other) {
+    bool operator==(Vec3 other) const {
         return (x - other.x) * (x - other.x) < FLOAT_EQ_MARGIN &&
                (y - other.y) * (y - other.y) < FLOAT_EQ_MARGIN &&
                (z - other.z) * (z - other.z) < FLOAT_EQ_MARGIN;
@@ -215,21 +215,21 @@ struct Vec4 {
         real _[4];
     };
 
-    Vec4 operator-() { return {-x, -y, -z, -w}; }
+    Vec4 operator-() const { return {-x, -y, -z, -w}; }
 
-    Vec4 operator+(Vec4 other) {
+    Vec4 operator+(Vec4 other) const {
         return {x + other.x, y + other.y, z + other.z, w + other.w};
     }
 
-    Vec4 operator-(Vec4 other) {
+    Vec4 operator-(Vec4 other) const {
         return {x - other.x, y - other.y, z - other.z, w - other.w};
     }
 
-    Vec4 operator*(real scaler) {
+    Vec4 operator*(real scaler) const {
         return {x * scaler, y * scaler, z * scaler, w * scaler};
     }
 
-    Vec4 operator/(real scaler) {
+    Vec4 operator/(real scaler) const {
         real divisor = 1.0f / scaler;
         return {x * divisor, y * divisor, z * divisor, w * divisor};
     }
@@ -252,7 +252,7 @@ struct Vec4 {
 
     void operator/=(real scaler) { *this = (*this) / scaler; }
 
-    bool operator==(Vec4 other) {
+    bool operator==(Vec4 other) const {
         return (x - other.x) * (x - other.x) < FLOAT_EQ_MARGIN &&
                (y - other.y) * (y - other.y) < FLOAT_EQ_MARGIN &&
                (z - other.z) * (z - other.z) < FLOAT_EQ_MARGIN &&
