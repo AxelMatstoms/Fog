@@ -1,13 +1,12 @@
 namespace Renderer {
 
 bool Particle::dead() {
-    return (!keep_alive) && alive > 1.0;
+    return (!keep_alive) && progress > 1.0;
 }
 
 void Particle::update(f32 delta) {
     if (dead()) return;
-    alive += inv_alive_time * delta;
-    progress = MOD(alive, 1.0);  //TODO(gu)
+    progress += inv_alive_time * delta;
     velocity += acceleration * delta;
     position += velocity * delta;
     velocity *= pow(damping, delta);
@@ -20,11 +19,11 @@ void Particle::render(u32 layer, Vec2 origin, s32 slot, Vec2 uv_min, Vec2 uv_dim
         layer,
         slot,
         position + origin,
-        dim * size(progress),
+        dim * progress_func_size(first_size, first_size_deriv, second_size, second_size_deriv, progress),
         rotation,
         uv_min,
         uv_dim,
-        color(progress));
+        progress_func_color(first_color, first_color_deriv, second_color, second_color_deriv, progress),
 }
 
 //TODO(gu) replace oldest particle when particle system is full ?
@@ -55,7 +54,7 @@ Particle ParticleSystem::generate() {
         second_color.w = die_alpha.random();
     }
     return {
-        0, 0,
+        0,
             1.0f / alive_time.random(),
             keep_alive,
 
@@ -67,11 +66,18 @@ Particle ParticleSystem::generate() {
             rotate(V2(1, 0), acceleration_dir.random()) * acceleration.random(),
             damping.random(),
 
-            get_std_progress_f32_func(first_size, second_size, first_size_deriv, second_size_deriv),
-
+            first_size,
+            first_size_deriv,
+            second_size,
+            second_size_deriv,
+            &progress_func_size,
             V2(width.random(), height.random()),
 
-            get_std_progress_vec4_func(first_color, second_color, first_color_deriv, second_color_deriv),
+            first_color,
+            first_color_deriv,
+            second_color,
+            second_color_deriv,
+            &progress_func_color,
             (s16) (num_sub_sprites ?  random_int() % num_sub_sprites : -1),
     };
 }
@@ -133,7 +139,7 @@ ParticleSystem create_particle_system(u32 layer, u32 num_particles, Vec2 positio
     Util::MemoryArena *arena = Util::request_arena();
     Particle *particles = arena->push<Particle>(num_particles);
     for (u32 i = 0; i < num_particles; i++) {
-        particles[i].alive = 2.0;
+        particles[i].progress = 2.0;
     }
     ParticleSystem particle_system = {arena, 0, 1};
     particle_system.head = 1;
@@ -157,6 +163,7 @@ ParticleSystem create_particle_system(u32 layer, u32 num_particles, Vec2 positio
 
     particle_system.spawn_size = {0.5, 1.0};
     particle_system.die_size = {0.0, 0.0};
+    particle_system.progress_func_size = get_std_progress_func_f32();
 
     particle_system.width = {1.0, 1.0};
     particle_system.height = {1.0, 1.0};
@@ -178,6 +185,8 @@ ParticleSystem create_particle_system(u32 layer, u32 num_particles, Vec2 positio
     particle_system.die_green = {};
     particle_system.die_blue = {};
     particle_system.die_alpha = {};
+
+    particle_system.progress_func_color = get_std_progress_func_vec4();
     return particle_system;
 }
 
