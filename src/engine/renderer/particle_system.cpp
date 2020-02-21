@@ -19,11 +19,11 @@ void Particle::render(u32 layer, Vec2 origin, s32 slot, Vec2 uv_min, Vec2 uv_dim
         layer,
         slot,
         position + origin,
-        dim * progress_func_size(first_size, first_size_deriv, second_size, second_size_deriv, progress),
+        dim * (*progress_func_size)(first_size, first_size_deriv, second_size, second_size_deriv, progress),
         rotation,
         uv_min,
         uv_dim,
-        progress_func_color(first_color, first_color_deriv, second_color, second_color_deriv, progress),
+        (*progress_func_color)(first_color, first_color_deriv, second_color, second_color_deriv, progress));
 }
 
 //TODO(gu) replace oldest particle when particle system is full ?
