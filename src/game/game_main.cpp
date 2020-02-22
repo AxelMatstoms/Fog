@@ -61,16 +61,19 @@ void setup() {
     Renderer::fetch_camera(0)->zoom = 2;
 
     system = Renderer::create_particle_system(5, 200, V2(0, 0));
-    system.keep_alive = true;
+    system.keep_alive = false;
     system.one_color = false;
     system.one_size = false;
-    system.alive_time = {0.2, 0.4};
+    system.alive_time = {0.5, 0.5};
     system.velocity_dir = {0, 2*PI};
-    system.spawn_size = {0.01, 0.03};
+    system.spawn_size = {0, 0};
+    system.die_size = {0, 0};
+    system.spawn_size_deriv = {0, 1};
+    system.die_size_deriv = {-1, 0};
     system.die_red = {0.96, 0.96};
     system.die_green = {0.894, 0.894};
     system.die_blue = {0.529, 0.529};
-    system.velocity = {0.1, 0.5};
+    system.velocity = {0.1, 0.3};
 }
 
 // Main logic
@@ -78,7 +81,7 @@ void update(f32 delta) {
     system.update(delta);
 
     using namespace Input;
-    if (down(Name::LEFT))
+    if (pressed(Name::LEFT))
         system.spawn();
 }
 

@@ -33,7 +33,7 @@ Particle ParticleSystem::generate() {
     f32 first_size = spawn_size.random();
     f32 first_size_deriv = spawn_size_deriv.random();
     f32 second_size = one_size ? first_size : die_size.random();
-    f32 second_size_deriv = spawn_size_deriv.random();
+    f32 second_size_deriv = die_size_deriv.random();
 
     Vec4 first_color = V4(spawn_red.random(), spawn_green.random(),
             spawn_blue.random(), spawn_alpha.random());
