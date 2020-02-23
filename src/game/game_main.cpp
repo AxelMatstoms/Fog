@@ -68,12 +68,12 @@ void setup() {
     system.velocity_dir = {0, 2*PI};
     system.spawn_size = {0, 0};
     system.die_size = {0, 0};
-    system.spawn_size_deriv = {0, 1};
-    system.die_size_deriv = {-1, 0};
+    system.spawn_size_deriv = {0.2, 0.2};
+    system.die_size_deriv = {0, 0};
     system.die_red = {0.96, 0.96};
     system.die_green = {0.894, 0.894};
     system.die_blue = {0.529, 0.529};
-    system.velocity = {0.1, 0.3};
+    system.velocity = {0.2, 0.4};
 }
 
 // Main logic
@@ -81,7 +81,7 @@ void update(f32 delta) {
     system.update(delta);
 
     using namespace Input;
-    if (pressed(Name::LEFT))
+    if (down(Name::LEFT))
         system.spawn();
 }
 
